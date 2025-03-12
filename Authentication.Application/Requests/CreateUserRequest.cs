@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Authentication.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Authentication.Application.Requests;
 public class CreateUserRequest
 {
-    [Key]
-    public int Id { get; set; }
     [Required]
     public string Name { get; set; }
     [Required]
@@ -12,4 +11,13 @@ public class CreateUserRequest
     public string Email { get; set; }
     [Required]
     public string Password { get; set; }
+    public User ToUser(string passwordHash)
+    {
+        return new User()
+        {
+            Name = Name,
+            Email = Email,
+            PasswordHash = passwordHash
+        };
+    }
 }

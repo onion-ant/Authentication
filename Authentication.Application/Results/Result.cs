@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Authentication.Application.Responses;
+﻿namespace Authentication.Application.Results;
 public class Result
 {
     protected internal Result(bool isSuccess, Error error)

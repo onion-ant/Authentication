@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Authentication.Domain.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace Authentication.Domain.Entities;
 public class User
@@ -11,6 +12,14 @@ public class User
     public string Email { get; set; }
     [Required]
     public string PasswordHash { get; set; }
-    [Required]
-    public string PasswordSalt { get; set; }
+
+    public UserDTO ToUserDTO()
+    {
+        return new UserDTO()
+        {
+            Id = Id,
+            Name = Name,
+            Email = Email
+        };
+    }
 }

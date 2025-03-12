@@ -1,3 +1,5 @@
+using Authentication.API.Middlewares;
+using Authentication.Application.Extensions;
 using Authentication.Infrastructure.Extensions;
 
 internal class Program
@@ -10,7 +12,9 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
-
+        builder.Services.AddApplication();
+        builder.Services.AddExceptionHandler<GlobalErrorHandlingMiddleware>();
+        builder.Services.AddProblemDetails();
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -18,6 +22,8 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseExceptionHandler();
 
         app.UseHttpsRedirection();
 

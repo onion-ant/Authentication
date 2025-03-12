@@ -1,4 +1,4 @@
-﻿using Authentication.Application.Responses;
+﻿using Authentication.Application.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authentication.API.Extensions;
@@ -31,6 +31,15 @@ public static class ResultExtensions
 
     private static ObjectResult ToActionError(Result result)
     {
-        return new ObjectResult(result.Error) { StatusCode = result.Error.StatusCode };
+        return new ObjectResult(result.Error)
+        {
+            StatusCode = result.Error.StatusCode,
+            Value = new
+            {
+                title = result.Error.Title,
+                message = result.Error.Message.First(),
+                status = result.Error.StatusCode
+            }
+        };
     }
 }
