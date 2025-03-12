@@ -14,8 +14,13 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
         return user;
     }
 
-    public async Task<bool> UserExistsByEmailAsync(string email)
+    public async Task<bool> ExistsByEmailAsync(string email)
     {
         return await _dbContext.Users.AnyAsync(x => x.Email == email);
+    }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
     }
 }

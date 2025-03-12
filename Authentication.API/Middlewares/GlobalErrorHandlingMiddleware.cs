@@ -1,4 +1,4 @@
-﻿using Authentication.Application.Results;
+﻿using Authentication.Application.Responses;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
 

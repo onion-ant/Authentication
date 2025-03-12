@@ -1,4 +1,4 @@
-﻿using Authentication.Application.Results;
+﻿using Authentication.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authentication.API.Extensions;

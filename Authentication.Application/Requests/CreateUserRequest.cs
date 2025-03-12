@@ -11,13 +11,4 @@ public class CreateUserRequest
     public string Email { get; set; }
     [Required]
     public string Password { get; set; }
-    public User ToUser(string passwordHash)
-    {
-        return new User()
-        {
-            Name = Name,
-            Email = Email,
-            PasswordHash = passwordHash
-        };
-    }
 }

@@ -1,4 +1,4 @@
-﻿namespace Authentication.Application.Results;
+﻿namespace Authentication.Application.Responses;
 public class Result
 {
     protected internal Result(bool isSuccess, Error error)

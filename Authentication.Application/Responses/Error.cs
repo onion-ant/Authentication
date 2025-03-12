@@ -1,4 +1,4 @@
-﻿namespace Authentication.Application.Results;
+﻿namespace Authentication.Application.Responses;
 public sealed class Error
 {
     public static readonly Error None = new(null, string.Empty, string.Empty);

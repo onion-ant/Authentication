@@ -4,5 +4,6 @@ namespace Authentication.Infrastructure.Interfaces;
 public interface IUserRepository
 {
     Task<User> CreateUserAsync(User user);
-    Task<bool> UserExistsByEmailAsync(string email);
+    Task<User?> GetByEmailAsync(string email);
+    Task<bool> ExistsByEmailAsync(string email);
 }

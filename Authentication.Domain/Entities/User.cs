@@ -12,14 +12,4 @@ public class User
     public string Email { get; set; }
     [Required]
     public string PasswordHash { get; set; }
-
-    public UserDTO ToUserDTO()
-    {
-        return new UserDTO()
-        {
-            Id = Id,
-            Name = Name,
-            Email = Email
-        };
-    }
 }
