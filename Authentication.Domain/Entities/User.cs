@@ -1,4 +1,5 @@
 ﻿using Authentication.Domain.DTOs;
+using Authentication.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Authentication.Domain.Entities;
@@ -12,4 +13,6 @@ public class User
     public string Email { get; set; }
     [Required]
     public string PasswordHash { get; set; }
+    [Required]
+    public ERole Role { get; set; }
 }

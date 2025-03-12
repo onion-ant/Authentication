@@ -20,7 +20,8 @@ public static class UserMappings
         {
             Id = user.Id,
             Name = user.Name,
-            Email = user.Email
+            Email = user.Email,
+            Role = user.Role,
         };
     }
     public static User ToUser(this CreateUserRequest user, string passwordHash)
@@ -29,7 +30,8 @@ public static class UserMappings
         {
             Name = user.Name,
             Email = user.Email,
-            PasswordHash = passwordHash
+            PasswordHash = passwordHash,
+            Role = user.Role,
         };
     }
 }

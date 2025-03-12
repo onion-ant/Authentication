@@ -1,6 +1,7 @@
 ﻿using Authentication.API.Extensions;
 using Authentication.Application.Interfaces;
 using Authentication.Application.Requests;
+using Authentication.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +25,15 @@ public class UsersController(IUserService userService) : ControllerBase
         return result.ToActionResult();
     }
     [Authorize]
-    [HttpGet("teste")]
-    public async Task<IActionResult> Teste()
+    [HttpGet("test-authentication")]
+    public async Task<IActionResult> TestAuthentication()
     {
-        return Ok("Autorizado");
+        return Ok("Authenticated");
+    }
+    [Authorize(Roles = "Admin")]
+    [HttpGet("test-authorization")]
+    public async Task<IActionResult> TestAuthorization()
+    {
+        return Ok("Authorized");
     }
 }

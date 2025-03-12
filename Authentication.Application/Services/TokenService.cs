@@ -13,10 +13,11 @@ public class TokenService(IConfiguration configuration) : ITokenService
 
     public string GetToken(UserDTO user)
     {
-        var claims = new List<Claim>();
         var idClaim = new Claim(ClaimTypes.NameIdentifier, user.Id.ToString());
+        var roleClaim = new Claim(ClaimTypes.Role, user.Role.ToString());
+        var claims = new List<Claim>() { idClaim, roleClaim };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:SecurityKey"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Token:SecurityKey"]!));
 
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
