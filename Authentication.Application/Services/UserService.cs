@@ -3,14 +3,19 @@ using Authentication.Application.Interfaces;
 using Authentication.Application.Requests;
 using Authentication.Application.Responses;
 using Authentication.Domain.DTOs;
+using Authentication.Domain.Entities;
 using Authentication.Infrastructure.Interfaces;
+using FluentEmail.Core;
 
 namespace Authentication.Application.Services;
-public class UserService(IUserRepository userRepository, IHashService hashService, ITokenService tokenService) : IUserService
+public class UserService(IUserRepository userRepository, IHashService hashService, ITokenService tokenService, IFluentEmail fluentEmail, IUnitOfWork unitOfWork, IEmailRepository emailRepository) : IUserService
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IHashService _hashService = hashService;
     private readonly ITokenService _tokenService = tokenService;
+    private readonly IFluentEmail _fluentEmail = fluentEmail;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IEmailRepository _emailRepository = emailRepository;
 
     public async Task<Result<AuthenticateResponse>> AuthenticateAsync(AuthenticateRequest request)
     {
@@ -20,6 +25,8 @@ public class UserService(IUserRepository userRepository, IHashService hashServic
         var checkPassword = _hashService.VerifyHash(request.Password, user.PasswordHash);
         if (!checkPassword)
             return Result.Failure<AuthenticateResponse>(Error.BadRequest("Incorrect email and/or password"));
+        if (!user.Verified)
+            return Result.Failure<AuthenticateResponse>(Error.BadRequest("Email not verified"));
         var userDTO = user.ToUserDTO();
         var token = _tokenService.GetToken(userDTO);
         return Result.Success(userDTO.ToAuthenticateResponse(token));
@@ -30,9 +37,29 @@ public class UserService(IUserRepository userRepository, IHashService hashServic
         var userExists = await _userRepository.ExistsByEmailAsync(request.Email);
         if (userExists)
             return Result.Failure<UserDTO>(Error.BadRequest("There is already a user with this email"));
-        //Validar Email
         var passwordHash = _hashService.GenerateHash(request.Password);
+        _unitOfWork.BeginTransaction();
         var userCreated = await _userRepository.CreateUserAsync(request.ToUser(passwordHash));
-        return Result.Success(userCreated.ToUserDTO());
+        var userDto = userCreated.ToUserDTO();
+        var verificationToken = userDto.ToEmailVerificationToken();
+        await _emailRepository.CreateEmailTokenAsync(verificationToken);
+        await _fluentEmail.To(request.Email)
+            .Subject("Email verification")
+            .Body($"Your email verify code is {verificationToken.Id}", isHtml: true)
+            .SendAsync();
+        await _unitOfWork.CommitAsync();
+        return Result.Success(userDto);
+    }
+
+    public async Task<Result> VerifyUserEmailAsync(Guid token)
+    {
+        var verificationToken = await _emailRepository.GetEmailTokenAsync(token);
+        if (verificationToken == null || verificationToken.ExpiresOnUtc < DateTime.UtcNow)
+            return Result.Failure(Error.BadRequest("Invalid verification token"));
+        _unitOfWork.BeginTransaction();
+        await _userRepository.VerifyUserEmailAsync(verificationToken.UserId);
+        await _emailRepository.DeleteEmailTokenAsync(verificationToken);
+        await _unitOfWork.CommitAsync();
+        return Result.Success();
     }
 }

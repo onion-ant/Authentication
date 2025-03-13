@@ -15,4 +15,6 @@ public class User
     public string PasswordHash { get; set; }
     [Required]
     public ERole Role { get; set; }
+    [Required]
+    public bool Verified { get; set; } = false;
 }

@@ -24,6 +24,12 @@ public class UsersController(IUserService userService) : ControllerBase
         var result = await _userService.AuthenticateAsync(request);
         return result.ToActionResult();
     }
+    [HttpGet("verify-email/{token}")]
+    public async Task<IActionResult> VerifyUserEmail([FromRoute]Guid token)
+    {
+        var result = await _userService.VerifyUserEmailAsync(token);
+        return result.ToActionResult();
+    }
     [Authorize]
     [HttpGet("test-authentication")]
     public async Task<IActionResult> TestAuthentication()

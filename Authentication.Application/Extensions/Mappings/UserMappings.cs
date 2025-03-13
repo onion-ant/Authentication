@@ -34,4 +34,11 @@ public static class UserMappings
             Role = user.Role,
         };
     }
+    public static EmailVerificationToken ToEmailVerificationToken(this UserDTO user)
+    {
+        return new EmailVerificationToken()
+        {
+            UserId = user.Id,
+        };
+    }
 }

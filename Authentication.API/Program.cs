@@ -46,8 +46,8 @@ internal class Program
     });
         });
 
-        builder.Services.AddInfrastructure(builder.Configuration.GetConnectionString("DefaultConnection"));
-        builder.Services.AddApplication();
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddApplication(builder.Configuration);
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

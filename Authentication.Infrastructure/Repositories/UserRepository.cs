@@ -23,4 +23,11 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
     {
         return await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
     }
+
+    public async Task VerifyUserEmailAsync(int userId)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        user.Verified = true;
+        await _dbContext.SaveChangesAsync();
+    }
 }
