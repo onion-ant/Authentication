@@ -17,4 +17,6 @@ public class User
     public ERole Role { get; set; }
     [Required]
     public bool Verified { get; set; } = false;
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }

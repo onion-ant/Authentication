@@ -29,7 +29,11 @@ public class UserService(IUserRepository userRepository, IHashService hashServic
             return Result.Failure<AuthenticateResponse>(Error.BadRequest("Email not verified"));
         var userDTO = user.ToUserDTO();
         var token = _tokenService.GetToken(userDTO);
-        return Result.Success(userDTO.ToAuthenticateResponse(token));
+        var refreshToken = _tokenService.GetRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _userRepository.UpdateUserAsync(user);
+        return Result.Success(userDTO.ToAuthenticateResponse(token, refreshToken));
     }
 
     public async Task<Result<UserDTO>> CreateUserAsync(CreateUserRequest request)
@@ -49,6 +53,22 @@ public class UserService(IUserRepository userRepository, IHashService hashServic
             .SendAsync();
         await _unitOfWork.CommitAsync();
         return Result.Success(userDto);
+    }
+
+    public async Task<Result<AuthenticateResponse>> RefreshTokensAsync(RefreshTokenRequest request)
+    {
+        var user = await _userRepository.GetByIdAsync(request.UserID);
+        if (user == null)
+            return Result.Failure<AuthenticateResponse>(Error.BadRequest("User does not exists"));
+        if(user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            return Result.Failure<AuthenticateResponse>(Error.BadRequest("Invalid refresh token"));
+        var userDTO = user.ToUserDTO();
+        var token = _tokenService.GetToken(userDTO);
+        var refreshToken = _tokenService.GetRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _userRepository.UpdateUserAsync(user);
+        return Result.Success(userDTO.ToAuthenticateResponse(token, refreshToken));
     }
 
     public async Task<Result> VerifyUserEmailAsync(Guid token)

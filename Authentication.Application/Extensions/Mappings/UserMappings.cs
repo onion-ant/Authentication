@@ -6,11 +6,12 @@ using Authentication.Domain.Entities;
 namespace Authentication.Application.Extensions.Mappings;
 public static class UserMappings
 {
-    public static AuthenticateResponse ToAuthenticateResponse(this UserDTO user, string token)
+    public static AuthenticateResponse ToAuthenticateResponse(this UserDTO user, string token, string refreshToken)
     {
         return new AuthenticateResponse 
         { 
             Token = token, 
+            RefreshToken = refreshToken,
             User = user
         };
     }
